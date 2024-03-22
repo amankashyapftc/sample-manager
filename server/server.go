@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -11,17 +12,21 @@ import (
 
 	"github.com/lib/pq"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
-type server struct {
-	pb.UnimplementedSampleServiceServer
+type Server struct {
+	pb.SampleServiceServer
+	DB *gorm.DB
 }
 
-func (s *server) GetSampleItemID(ctx context.Context, in *pb.GetSampleItemIDRequest) (*pb.GetSampleItemIDResponse, error) {
-	//result := s.DB.Where("?::text[] && clm_segments AND item_id = ?", pq.StringArray(req.ClmSegments), req.ItemId).First(&mapping)
+func (s *Server) GetSampleItemID(ctx context.Context, in *pb.GetSampleItemIDRequest) (*pb.GetSampleItemIDResponse, error) {
 	var sampleItem model.SampleItem
-	if err := config.GetDB().Where("?::text[] && clm_segments AND item_id = ?", pq.StringArray(req.ClmSegments), req.ItemId).First(&mapping).Error; err != nil {
-		return nil, err
+	if err := s.DB.Where("item_id = ? AND segments = ?::text[]", in.ItemId, pq.Array(in.ClmSegments)).First(&sampleItem).Error; err != nil {
+		errorString := fmt.Sprintf("No mapping found: %v", err)
+		return nil, status.Error(codes.Unavailable, errorString)
 	}
 
 	sampleItemID := sampleItem.SampleItemID
@@ -29,8 +34,8 @@ func (s *server) GetSampleItemID(ctx context.Context, in *pb.GetSampleItemIDRequ
 	return &pb.GetSampleItemIDResponse{SampleItemId: sampleItemID}, nil
 }
 
-func (s *server) CreateSampleItem(ctx context.Context, in *pb.CreateSampleItemRequest) (*pb.CreateSampleItemResponse, error) {
-	tx := config.GetDB().Begin()
+func (s *Server) CreateSampleItem(ctx context.Context, in *pb.CreateSampleItemRequest) (*pb.CreateSampleItemResponse, error) {
+	tx := s.DB.Begin()
 
 	sampleItem := &model.SampleItem{
 		SampleItemID: in.SampleItemId,
@@ -58,7 +63,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterSampleServiceServer(s, &server{})
+	pb.RegisterSampleServiceServer(s, &Server{DB: config.GetDB()})
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
