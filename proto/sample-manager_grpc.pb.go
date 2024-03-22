@@ -4,7 +4,7 @@
 // - protoc             v3.14.0
 // source: proto/sample-manager.proto
 
-package proto
+package sample_manager
 
 import (
 	context "context"
@@ -18,122 +18,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// SampleManagerClient is the client API for SampleManager service.
+// SampleServiceClient is the client API for SampleService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SampleManagerClient interface {
-	CreateMapping(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	GetSampleId(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+type SampleServiceClient interface {
+	GetSampleItemID(ctx context.Context, in *GetSampleItemIDRequest, opts ...grpc.CallOption) (*GetSampleItemIDResponse, error)
+	CreateSampleItem(ctx context.Context, in *CreateSampleItemRequest, opts ...grpc.CallOption) (*CreateSampleItemResponse, error)
 }
 
-type sampleManagerClient struct {
+type sampleServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewSampleManagerClient(cc grpc.ClientConnInterface) SampleManagerClient {
-	return &sampleManagerClient{cc}
+func NewSampleServiceClient(cc grpc.ClientConnInterface) SampleServiceClient {
+	return &sampleServiceClient{cc}
 }
 
-func (c *sampleManagerClient) CreateMapping(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
-	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, "/proto.SampleManager/CreateMapping", in, out, opts...)
+func (c *sampleServiceClient) GetSampleItemID(ctx context.Context, in *GetSampleItemIDRequest, opts ...grpc.CallOption) (*GetSampleItemIDResponse, error) {
+	out := new(GetSampleItemIDResponse)
+	err := c.cc.Invoke(ctx, "/SampleService/GetSampleItemID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *sampleManagerClient) GetSampleId(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
-	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/proto.SampleManager/GetSampleId", in, out, opts...)
+func (c *sampleServiceClient) CreateSampleItem(ctx context.Context, in *CreateSampleItemRequest, opts ...grpc.CallOption) (*CreateSampleItemResponse, error) {
+	out := new(CreateSampleItemResponse)
+	err := c.cc.Invoke(ctx, "/SampleService/CreateSampleItem", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// SampleManagerServer is the server API for SampleManager service.
-// All implementations must embed UnimplementedSampleManagerServer
+// SampleServiceServer is the server API for SampleService service.
+// All implementations must embed UnimplementedSampleServiceServer
 // for forward compatibility
-type SampleManagerServer interface {
-	CreateMapping(context.Context, *CreateRequest) (*CreateResponse, error)
-	GetSampleId(context.Context, *GetRequest) (*GetResponse, error)
-	mustEmbedUnimplementedSampleManagerServer()
+type SampleServiceServer interface {
+	GetSampleItemID(context.Context, *GetSampleItemIDRequest) (*GetSampleItemIDResponse, error)
+	CreateSampleItem(context.Context, *CreateSampleItemRequest) (*CreateSampleItemResponse, error)
+	mustEmbedUnimplementedSampleServiceServer()
 }
 
-// UnimplementedSampleManagerServer must be embedded to have forward compatible implementations.
-type UnimplementedSampleManagerServer struct {
+// UnimplementedSampleServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedSampleServiceServer struct {
 }
 
-func (UnimplementedSampleManagerServer) CreateMapping(context.Context, *CreateRequest) (*CreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateMapping not implemented")
+func (UnimplementedSampleServiceServer) GetSampleItemID(context.Context, *GetSampleItemIDRequest) (*GetSampleItemIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSampleItemID not implemented")
 }
-func (UnimplementedSampleManagerServer) GetSampleId(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSampleId not implemented")
+func (UnimplementedSampleServiceServer) CreateSampleItem(context.Context, *CreateSampleItemRequest) (*CreateSampleItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSampleItem not implemented")
 }
-func (UnimplementedSampleManagerServer) mustEmbedUnimplementedSampleManagerServer() {}
+func (UnimplementedSampleServiceServer) mustEmbedUnimplementedSampleServiceServer() {}
 
-// UnsafeSampleManagerServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SampleManagerServer will
+// UnsafeSampleServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SampleServiceServer will
 // result in compilation errors.
-type UnsafeSampleManagerServer interface {
-	mustEmbedUnimplementedSampleManagerServer()
+type UnsafeSampleServiceServer interface {
+	mustEmbedUnimplementedSampleServiceServer()
 }
 
-func RegisterSampleManagerServer(s grpc.ServiceRegistrar, srv SampleManagerServer) {
-	s.RegisterService(&SampleManager_ServiceDesc, srv)
+func RegisterSampleServiceServer(s grpc.ServiceRegistrar, srv SampleServiceServer) {
+	s.RegisterService(&SampleService_ServiceDesc, srv)
 }
 
-func _SampleManager_CreateMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+func _SampleService_GetSampleItemID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSampleItemIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SampleManagerServer).CreateMapping(ctx, in)
+		return srv.(SampleServiceServer).GetSampleItemID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.SampleManager/CreateMapping",
+		FullMethod: "/SampleService/GetSampleItemID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SampleManagerServer).CreateMapping(ctx, req.(*CreateRequest))
+		return srv.(SampleServiceServer).GetSampleItemID(ctx, req.(*GetSampleItemIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SampleManager_GetSampleId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRequest)
+func _SampleService_CreateSampleItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSampleItemRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SampleManagerServer).GetSampleId(ctx, in)
+		return srv.(SampleServiceServer).CreateSampleItem(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.SampleManager/GetSampleId",
+		FullMethod: "/SampleService/CreateSampleItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SampleManagerServer).GetSampleId(ctx, req.(*GetRequest))
+		return srv.(SampleServiceServer).CreateSampleItem(ctx, req.(*CreateSampleItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// SampleManager_ServiceDesc is the grpc.ServiceDesc for SampleManager service.
+// SampleService_ServiceDesc is the grpc.ServiceDesc for SampleService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var SampleManager_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.SampleManager",
-	HandlerType: (*SampleManagerServer)(nil),
+var SampleService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "SampleService",
+	HandlerType: (*SampleServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateMapping",
-			Handler:    _SampleManager_CreateMapping_Handler,
+			MethodName: "GetSampleItemID",
+			Handler:    _SampleService_GetSampleItemID_Handler,
 		},
 		{
-			MethodName: "GetSampleId",
-			Handler:    _SampleManager_GetSampleId_Handler,
+			MethodName: "CreateSampleItem",
+			Handler:    _SampleService_CreateSampleItem_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
